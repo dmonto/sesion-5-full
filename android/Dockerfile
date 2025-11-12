@@ -29,4 +29,7 @@ RUN ls -la /project
 
 RUN sh /project/gradlew build --refresh-dependencies
 
-CMD ["sh", "/project/gradlew", "assembleDebug"]
+# Exponer puerto 5005 para depuración JVM remota
+EXPOSE 5005
+
+CMD ["sh", "/project/gradlew", "assembleDebug", "-jvmopts", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"]
