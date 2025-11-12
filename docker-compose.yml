@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./python:/python:cached
+    ports:
+      - "3001:3001"
+    command: ["pipenv", "run", "gunicorn", "--bind", "0.0.0.0:3001", "src.app:app"]
+    depends_on:
+      - db
+    environment:
+      - PYTHONPATH=/python/src
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - ./frontend:/frontend:cached
+      - /frontend/node_modules
+    ports:
+      - "3000:3000"
+    command: ["npm", "start"]
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gitpod
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: example
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  android-builder:
+    build:
+      context: ./android
+      dockerfile: Dockerfile
+    volumes:
+      - ./android:/project
+
+volumes:
+  pgdata:

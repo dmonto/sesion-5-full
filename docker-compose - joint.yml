@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    volumes:
+      - ./python:/python:cached
+      - ./.env:/python/.env
+    ports:
+      - "5000:5000"   # Backend Flask
+      - "3000:3000"   # React dev server si aplica
+      - "3001:3001"   # Flask dev server si aplica
+    environment:
+      - PIPENV_VENV_IN_PROJECT=1
+      - DATABASE_URL=postgresql://gitpod:postgres@db:5432/example
+      - FLASK_APP=src.app:app
+      - PYTHONPATH=/python/src
+    env_file:
+      - .env
+    command: ["./setup_and_start.sh"]
+    depends_on:
+      - db
+
+  android-builder:
+    build:
+      context: ./android
+      dockerfile: Dockerfile
+    volumes:
+      - ./android:/project
+
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: gitpod
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: example
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+

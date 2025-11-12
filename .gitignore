@@ -1,0 +1,21 @@
+# Python environment
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Node modules
+node_modules/
+
+# environment variables
+.env
+
+# caches, logs, build files
+pytest_cache/
+dist/
+build/
+*.log
+
+# VSCode
+.vscode/
